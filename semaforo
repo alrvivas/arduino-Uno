@@ -1,0 +1,80 @@
+/*
+@alrvivas
+  Programa para un par de semaforos que cambian de uno
+  a otro, y la implementacin de un boton para terminar
+  el tiempo de la luz verde y pasar al otro.
+*/
+const int button = 8;
+const int verdes = 2;
+const int amarillo1 = 3;
+const int rojo1 = 4;
+const int verde2 = 5;
+const int amarillo2 = 6;
+const int rojo2 = 7;
+
+void setup() {
+  // Con un ciclo activamos los pines del 2 al 7 como salidas
+  for (int pin = 2; pin <= 7; pin++) {
+    pinMode(pin, OUTPUT);
+  }
+  // El pin del boton lo ponemos como entrada
+  pinMode(button, INPUT);
+}
+
+void apagarLeds(){
+  // Cambiamos el estado de todos los leds para
+  // que esten apagados todos al inicio
+  for (int pin = 2; pin <= 7; pin++) {
+    digitalWrite(pin, HIGH);
+  }
+}
+ 
+// Iniciamos nuestro semaforo
+void semaforoUno(){
+  int n = 0;
+  while(n < 200){
+    if(digitalRead(button) == true){
+      apagarLeds();
+      semaforoDos();
+    }  
+    digitalWrite(verdes, LOW);
+    digitalWrite(rojo2, LOW);
+    delay(30);
+    n++;
+  }            
+    for (int amarillo = 0; amarillo <6; amarillo++ ){
+      digitalWrite(amarillo1, LOW);
+      delay(500);
+      digitalWrite(amarillo1, HIGH);
+      delay(500);  
+    }
+    digitalWrite(rojo2, HIGH);
+    digitalWrite(verdes, HIGH);    
+}
+void semaforoDos(){
+  int n = 0;
+  while(n < 200){
+    if(digitalRead(button) == true){
+      apagarLeds();
+      semaforoUno();
+    }  
+    digitalWrite(verde2, LOW);
+    digitalWrite(rojo1, LOW);
+    delay(30);
+    n++;
+  } 
+  for (int amarillo = 0; amarillo <6; amarillo++ ){
+    digitalWrite(amarillo2, LOW);
+    delay(500);
+    digitalWrite(amarillo2, HIGH);
+    delay(500);  
+  }
+  digitalWrite(rojo1, HIGH);
+  digitalWrite(verde2, HIGH);  
+}
+
+void loop() {
+  apagarLeds();
+  semaforoUno();
+  semaforoDos(); 
+}
