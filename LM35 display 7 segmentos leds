@@ -1,0 +1,73 @@
+/*descargue libreria http://www.arduinoting.com/2013/05/using-a-7-segment-led-display-w-arduino-uno/*/
+#include <LEDDisplay.h>
+LEDDisplay *led;
+
+//declare variables
+float tempC;
+int tempPin = A1;
+const int verde = 12;
+const int amarillo = 13;
+const int rojo = 14;
+int millisecondsPerCount = 2000;
+int counter;
+unsigned long lastUpdate;
+
+void setup()
+{
+   Serial.begin(9600);
+   pinMode(verde, OUTPUT);
+   pinMode(amarillo, OUTPUT);
+   pinMode(rojo, OUTPUT);
+  int digitFlagPins[] = {10, 11};
+  int segmentPins[] = {2, 3, 4, 5 ,6 ,7 ,8, 9};
+  int decimalPointPin = 9;
+  led = new LEDDisplay(2, digitFlagPins, segmentPins, decimalPointPin);
+}
+void apagarLeds(){
+    digitalWrite(verde, HIGH);
+    digitalWrite(amarillo, HIGH);  
+    digitalWrite(rojo, HIGH); 
+  
+}
+
+void loop()
+{
+  apagarLeds();
+  Serial.print("Temperatura:");
+  tempC = analogRead(tempPin);           //read the value from the sensor
+  tempC = (5.0 * tempC * 100.0)/1023.0;  //convert the analog data to temperature
+  Serial.print((byte)tempC);
+  Serial.println();  
+  unsigned long now = millis();
+  if (now - lastUpdate > millisecondsPerCount)
+  {
+    lastUpdate = now;
+    counter = tempC;
+    
+    if (counter == 100)
+    {
+      counter = 99;
+    }
+  }
+  if (counter <= 40){
+      apagarLeds();
+      digitalWrite(verde, LOW);     
+    }
+    
+    if (counter > 40){
+      apagarLeds();
+      digitalWrite(amarillo, LOW);
+      
+    }
+    if (counter > 70){
+      apagarLeds();
+      digitalWrite(rojo, LOW);     
+    }
+  int number = counter;
+  for(int i = 0; i <= 2; i++)
+  {
+    led->displayNumber(number % 10, i);
+    delay(2);
+    number = number / 10;
+  }
+}
