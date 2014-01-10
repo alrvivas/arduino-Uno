@@ -1,0 +1,122 @@
+/*
+@alrvivas
+  Programa para un par de semaforos que cambian de uno
+  a otro, y la implementacin de un boton para terminar
+  el tiempo de la luz verde y pasar al otro.
+*/
+const int button = 9;
+const int peaton =2;
+
+const int verdes = 8;
+const int amarillo1 = 7;
+const int rojo1 = 6;
+
+const int verde2 = 5;
+const int amarillo2 = 4;
+const int rojo2 = 3;
+
+int potenciometro = A0;
+int tiempo = 0;
+
+void setup() {
+   Serial.begin(9600);
+  // Con un ciclo activamos los pines del 2 al 8 como salidas
+  for (int pin = 2; pin <= 8; pin++) {
+    pinMode(pin, OUTPUT);
+  }
+  // El pin del boton lo ponemos como entrada
+  pinMode(button, INPUT);
+}
+
+void apagarLeds(){
+  // Cambiamos el estado de todos los leds para
+  // que esten apagados todos al inicio
+  for (int pin = 2; pin <= 8; pin++) {
+    digitalWrite(pin, LOW);
+  }
+}
+void semaforoPeatonal(int time){
+  digitalWrite(peaton, HIGH);
+  digitalWrite(rojo1, HIGH);
+  digitalWrite(rojo2, HIGH);
+  delay((time*5));
+  apagarLeds();
+  /*int n =0;
+  while(n < 200){
+    if(digitalRead(button) == true){
+      apagarLeds();
+      break;
+    }  
+    digitalWrite(peaton, HIGH);
+    delay(30);
+    n++;
+  }*/ 
+ 
+} 
+void advertencia(){
+ for (int amarillo = 0; amarillo <6; amarillo++ ){
+        digitalWrite(amarillo2, HIGH);
+        digitalWrite(amarillo1, HIGH);
+        delay(500);
+        digitalWrite(amarillo2, LOW);
+        digitalWrite(amarillo1, LOW);
+        delay(500);  
+      } 
+}
+// Iniciamos nuestro semaforo
+void semaforoUno(int time){
+  int n = 0;
+  while(n < (200+time)){
+    if(digitalRead(button) == true){
+      advertencia();
+      apagarLeds();
+      semaforoPeatonal(time);
+    }  
+    digitalWrite(verdes, HIGH);
+    digitalWrite(rojo2, HIGH);
+    delay(30);
+    n++;
+  }            
+    for (int amarillo = 0; amarillo <6; amarillo++ ){
+      digitalWrite(amarillo1, HIGH);
+      delay(500);
+      digitalWrite(amarillo1, LOW);
+      delay(500);  
+    }
+    digitalWrite(rojo2, LOW);
+    digitalWrite(verdes, LOW);    
+}
+void semaforoDos(int time){
+  int n = 0;
+  while(n < (200+time)){
+    if(digitalRead(button) == true){
+      advertencia();
+      apagarLeds();
+      semaforoPeatonal(time);
+    }  
+    digitalWrite(verde2, HIGH);
+    digitalWrite(rojo1, HIGH);
+    delay(30);
+    n++;
+  } 
+  for (int amarillo = 0; amarillo <6; amarillo++ ){
+    digitalWrite(amarillo2, HIGH);
+    delay(500);
+    digitalWrite(amarillo2, LOW);
+    delay(500);  
+  }
+  digitalWrite(rojo1, LOW);
+  digitalWrite(verde2, LOW);  
+}
+
+void loop() {
+  int pot = analogRead(potenciometro);
+  int defaul = 200;
+  tiempo=defaul+pot;
+  apagarLeds();
+  semaforoPeatonal(tiempo);
+  semaforoUno(tiempo);
+  semaforoPeatonal(tiempo);
+  semaforoDos(tiempo);
+   
+}
